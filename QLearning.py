@@ -8,6 +8,12 @@ class QLearning:
         self.sarsList = []  #(state, action, reward, next_state)
 
     def Initialize(self, file_Name: str, init_QValue: bool=False):
+        '''
+        Q-Learning 초기화
+
+        :param file_Name: Q 테이블 CSV 파일명
+        :param init_QValue: 모든 Q값 초기화 여부
+        '''
         f = open(file_Name, "r")
         csv_r = csv.reader(f)
 
@@ -25,6 +31,17 @@ class QLearning:
 
     def Learn(self, starting_State: str, end_State: str, is_FirstPlayer: bool, winning_Reward: float,
               learning_Rate: float, discount_Factor: float, epsilon_Greedy: float):
+        '''
+        학습
+
+        :param starting_State: 시작 상태
+        :param end_State: 에피소드 종료 상태
+        :param is_FirstPlayer: 학습대상이 첫 턴
+        :param winning_Reward: 승리시 보상 값
+        :param learning_Rate: 학습률
+        :param discount_Factor: 할인율
+        :param epsilon_Greedy: 입실론-그리디 값
+        '''
         epsilon_greedy = max(0.0, min(epsilon_Greedy, 1.0))
         self.sarsList = []
         current_num = starting_State
@@ -51,6 +68,11 @@ class QLearning:
                 current_state = next_state
 
     def WriteQTable(self, file_Name: str):
+        '''
+        Q 테이블 쓰기
+
+        :param file_Name: Q 테이블 CSV 파일명
+        '''
         f = open(file_Name, 'w', newline='')
         wr = csv.writer(f)
         line = [""]
@@ -144,6 +166,13 @@ class QLearning:
         return action
 
     def __GetNextNumber(self, current_State: str, action: str) -> str:
+        '''
+        다음 숫자 가져오기
+
+        :param current_State: 현재 상태
+        :param action: 행동
+        :return: 다음 숫자
+        '''
         next_state = ""
         if int(current_State) + int(action) > 31:
             next_state = "31"
@@ -165,7 +194,19 @@ class QLearning:
             next_state = "31"
         self.sarsList.append((current_State, action, reward, next_State))
 
-    def __UpdateQValue(self, current_State: str, next_State: str, action: str, reward: float, learning_Rate: float, discount_Factor: float):
+    def __UpdateQValue(self, current_State: str, next_State: str, action: str, reward: float,
+                       learning_Rate: float, discount_Factor: float):
+        '''
+        Q 값 업데이트
+        
+        :param current_State: 현재 상태
+        :param next_State: 다음 상태
+        :param action: 행동
+        :param reward: 보상
+        :param learning_Rate: 학습률
+        :param discount_Factor: 감가율
+        :return: 
+        '''
         max_q = self.__GetMaxQValue(next_State)
         q_value = self.qTable.GetQValue(current_State, action)
         q_value = (1 - learning_Rate) * q_value \
